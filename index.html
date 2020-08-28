@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <title></title>
+    <style>
+    .tasks{
+      padding: 2px;
+      margin: 2px;
+      border: 2px solid #ccc;
+    }
+    </style>
+  </head>
+  <body>
+    <form id="list_all">
+      <p><select name="status" size="3" multiple>
+        <option selected value="">все</option>
+        <option value="0">Активные</option>
+        <option value="1">Выполненные</option>
+      </select></p>
+      <p>
+         <label for="localdate">Дата от: </label>
+         <input type="datetime-local" id="localdate" name="date_start"/>
+      </p>
+      <p>
+         <label for="localdate">Дата до: </label>
+         <input type="datetime-local" id="localdate" name="date_end"/>
+      </p>
+      <p><input type="button" value="Отправить" onclick="get_info('list_all', 'results')"></p>
+    </form>
+    <div id="results"></div>
+  </body>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    function get_info(form_id, results_id){
+      var msg   = $('#'+form_id).serialize();
+      data = "";
+      $.ajax({
+        type: 'GET',
+        url: "api/",
+        dataType: 'json',
+        async: false,
+        data: msg,
+        success: function(data){
+            var res =data.result;
+            var html="";
+            //console.log(data.result);
+           //var obj = JSON.parse(data);
+           // var arr = obj.fields;
+           for (var key in res) {
+             html = html+"<div class='tasks'>Заголовок: "+res[key].title+"<br>Описание: "+res[key].text+"<br>Дата начала: "+res[key].date_start+"<br> Дата окончания: "+res[key].date_end+"<br> </div>";
+
+          }
+          console.log(html);
+          $('#'+results_id).html(html);
+           var result = data;
+          }
+      });
+      //return result;
+
+    }
+
+    function sendmyform(form_id, results_id) {
+      var msg   = $('#'+form_id).serialize();
+          $.ajax({
+            type: 'POST',
+            url: '/api/',
+            dataType: 'json',
+            data: msg,
+            success: function(data) {
+              console.log(data);
+              $('#'+results_id).html(data);
+            },
+            error:  function(xhr, str){
+        alert('Возникла ошибка: ' + xhr.responseCode);
+            }
+          });
+
+      }
+
+
+  </script>
+
+</html>
